@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  portainer:
+    privileged: true
+    image: rancher/rancher:latest
+    container_name: rancher-radar
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy
+      - default
+    volumes:
+      - /opt/rancher:/var/lib/rancher 
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.rancher-radar-secure.entrypoints=websecure"
+      - "traefik.http.routers.rancher-radar-secure.rule=Host(`rancher.technoplus.link`)"
+      - "traefik.http.routers.rancher-radar-secure.service=rancher-radar"
+      - "traefik.http.services.rancher-radar.loadbalancer.server.port=80"
+
+networks:
+  proxy:
+    external: true
